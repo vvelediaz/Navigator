@@ -6,6 +6,7 @@ import com.solvd.navigator.dao.impl.mybatis.*;
 import com.solvd.navigator.dao.impl.mybatis.DriverLicenseDAO;
 import com.solvd.navigator.model.*;
 
+import com.solvd.navigator.service.ServiceTest;
 import org.apache.logging.log4j.Logger;
 
 import java.util.Random;
@@ -19,6 +20,7 @@ public class App {
 
     public static void main(String[] args) {
 
+        ServiceTest.addCompleteDataToDatabase();
         //DaoTesting.DLTest();
 //        DaoTesting.TransportationTypeTest();
 //        DaoTesting.PersonDriverTest();

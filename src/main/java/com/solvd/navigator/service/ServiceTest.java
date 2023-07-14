@@ -20,6 +20,7 @@ public class ServiceTest {
     private static final Logger logger = org.apache.logging.log4j.LogManager.getLogger(App.class);
     private static final Random random = new Random();
     private  static AbstractFactory daoFactory = FactoryGenerator.getFactory(FactoryType.JDBC);
+    private static final double EARTH_RADIUS = 6371;
 
     public static void DLTest(){
 
@@ -169,7 +170,7 @@ public class ServiceTest {
         // Test LocationDAO, route list is initialized in service layer
         //ILocationDAO locationDAO = daoFactory.getDao(DaoType.LOCATION);
 
-        IService locationService = new LocationService();
+        IService<Location> locationService = new LocationService();
 
         Location location1 = createLocation("New York", new Coordinate(40.7128, 74.0060));
         Location location2 = createLocation("Los Angeles", new Coordinate(34.0522, 118.2437));
@@ -267,7 +268,7 @@ public class ServiceTest {
         Transportation transportation2 = createTransportation(driver2, transportationType2);
 
         //IRouteDAO routeDAO = daoFactory.getDao(DaoType.ROUTE);
-        IService routeService = new RouteService();
+        IService<Route> routeService = new RouteService();
         Route route = createRoute(locationA, locationB, transportation,100, 1000);
         Route route2 = createRoute(locationA, locationC, transportation2,250, 1500);
 
@@ -395,7 +396,6 @@ public class ServiceTest {
         List<Location> locationList = new ArrayList<>();
         List<Route> routeList = new ArrayList<>();
 
-
         IDriverLicenseDAO driverLicenseDAO = daoFactory.getDao(DaoType.DRIVER_LICENSE);
         DriverLicense driverLicense = createDriverLicense();
         driverLicense.setId(1L);
@@ -415,17 +415,17 @@ public class ServiceTest {
         transportationType5.setId(5L);
 
         ILocationDAO locationDAO = daoFactory.getDao(DaoType.LOCATION);
-        Location locationA = createLocation("Chicago", new Coordinate(41.8781, 87.6298));
+        Location locationA = createLocation("Sacramento", new Coordinate(38.5816, 121.4944));
         locationA.setId(1L);
-        Location locationB = createLocation("San Francisco", new Coordinate(37.7749, 122.4194));
+        Location locationB = createLocation("Salt Lake City", new Coordinate(40.7608, 111.8910));
         locationB.setId(2L);
-        Location locationC = createLocation("Houston", new Coordinate(29.7604, 95.3698));
+        Location locationC = createLocation("Austin", new Coordinate(30.2672, 97.7431));
         locationC.setId(3L);
-        Location locationD = createLocation("Los Vegas", new Coordinate(41.8781, 87.6298));
+        Location locationD = createLocation("Washington DC", new Coordinate(38.9072, 77.0369));
         locationD.setId(4L);
-        Location locationE = createLocation("San Antonio", new Coordinate(37.7749, 122.4194));
+        Location locationE = createLocation("Miami", new Coordinate(25.7617, 80.1918));
         locationE.setId(5L);
-        Location locationF = createLocation("Baltimore", new Coordinate(29.7604, 95.3698));
+        Location locationF = createLocation("Charleston", new Coordinate(32.7765, 79.9311));
         locationF.setId(6L);
         locationList.add(locationA);
         locationList.add(locationB);
@@ -457,21 +457,40 @@ public class ServiceTest {
 
 
         //IRouteDAO routeDAO = daoFactory.getDao(DaoType.ROUTE);
-        IService routeService = new RouteService();
-        Route route = createRoute(locationA, locationB, transportation,100, 1000);
+        IService<Route> routeService = new RouteService();
+        Route route = createRoute(locationA, locationB, transportation,7, calculateDistance(locationA.getCoordinate().getLatitude(), locationA.getCoordinate().getLongitude(), locationB.getCoordinate().getLatitude(), locationB.getCoordinate().getLongitude()));
         route.setId(1L);
-        Route route2 = createRoute(locationA, locationC, transportation2,250, 1500);
+        Route route2 = createRoute(locationA, locationC, transportation,12, calculateDistance(locationA.getCoordinate().getLatitude(), locationA.getCoordinate().getLongitude(), locationC.getCoordinate().getLatitude(), locationC.getCoordinate().getLongitude()));
         route2.setId(2L);
-        Route route3 = createRoute(locationB, locationD, transportation5,140, 500);
+        Route route3 = createRoute(locationB, locationC, transportation4,2, calculateDistance(locationB.getCoordinate().getLatitude(), locationB.getCoordinate().getLongitude(), locationC.getCoordinate().getLatitude(), locationC.getCoordinate().getLongitude()));
         route3.setId(3L);
-        Route route4 = createRoute(locationC, locationE, transportation3,200, 1400);
+        Route route4 = createRoute(locationD, locationE, transportation2,4, calculateDistance(locationD.getCoordinate().getLatitude(), locationD.getCoordinate().getLongitude(), locationE.getCoordinate().getLatitude(), locationE.getCoordinate().getLongitude()));
         route4.setId(4L);
-        Route route5 = createRoute(locationE, locationF, transportation4,160, 1100);
+        Route route5 = createRoute(locationB, locationD, transportation3,9, calculateDistance(locationB.getCoordinate().getLatitude(), locationB.getCoordinate().getLongitude(), locationD.getCoordinate().getLatitude(), locationD.getCoordinate().getLongitude()));
         route5.setId(5L);
-        Route route6 = createRoute(locationD, locationF, transportation2,400, 2500);
+        Route route6 = createRoute(locationC, locationE, transportation,10, calculateDistance(locationC.getCoordinate().getLatitude(), locationC.getCoordinate().getLongitude(), locationE.getCoordinate().getLatitude(), locationE.getCoordinate().getLongitude()));
         route6.setId(6L);
-        Route route7 = createRoute(locationB, locationE, transportation3,70, 2500);
+        Route route7 = createRoute(locationE, locationF, transportation4,5, calculateDistance(locationE.getCoordinate().getLatitude(), locationE.getCoordinate().getLongitude(), locationF.getCoordinate().getLatitude(), locationF.getCoordinate().getLongitude()));
         route7.setId(7L);
+        Route route8 = createRoute(locationD, locationF, transportation2,1, calculateDistance(locationD.getCoordinate().getLatitude(), locationD.getCoordinate().getLongitude(), locationF.getCoordinate().getLatitude(), locationF.getCoordinate().getLongitude()));
+        route8.setId(8L);
+
+        Route route9 = createRoute(locationB, locationA, transportation,7, calculateDistance(locationA.getCoordinate().getLatitude(), locationA.getCoordinate().getLongitude(), locationB.getCoordinate().getLatitude(), locationB.getCoordinate().getLongitude()));
+        route9.setId(9L);
+        Route route10 = createRoute(locationC, locationA, transportation,12, calculateDistance(locationA.getCoordinate().getLatitude(), locationA.getCoordinate().getLongitude(), locationC.getCoordinate().getLatitude(), locationC.getCoordinate().getLongitude()));
+        route10.setId(10L);
+        Route route11 = createRoute(locationC, locationB, transportation4,2, calculateDistance(locationB.getCoordinate().getLatitude(), locationB.getCoordinate().getLongitude(), locationC.getCoordinate().getLatitude(), locationC.getCoordinate().getLongitude()));
+        route11.setId(11L);
+        Route route12 = createRoute(locationE, locationD, transportation2,4, calculateDistance(locationD.getCoordinate().getLatitude(), locationD.getCoordinate().getLongitude(), locationE.getCoordinate().getLatitude(), locationE.getCoordinate().getLongitude()));
+        route12.setId(12L);
+        Route route13 = createRoute(locationD, locationB, transportation3,9, calculateDistance(locationB.getCoordinate().getLatitude(), locationB.getCoordinate().getLongitude(), locationD.getCoordinate().getLatitude(), locationD.getCoordinate().getLongitude()));
+        route13.setId(13L);
+        Route route14 = createRoute(locationE, locationC, transportation,10, calculateDistance(locationC.getCoordinate().getLatitude(), locationC.getCoordinate().getLongitude(), locationE.getCoordinate().getLatitude(), locationE.getCoordinate().getLongitude()));
+        route14.setId(14L);
+        Route route15 = createRoute(locationF, locationE, transportation4,5, calculateDistance(locationE.getCoordinate().getLatitude(), locationE.getCoordinate().getLongitude(), locationF.getCoordinate().getLatitude(), locationF.getCoordinate().getLongitude()));
+        route15.setId(15L);
+        Route route16 = createRoute(locationF, locationD, transportation2,1, calculateDistance(locationD.getCoordinate().getLatitude(), locationD.getCoordinate().getLongitude(), locationF.getCoordinate().getLatitude(), locationF.getCoordinate().getLongitude()));
+        route16.setId(16L);
 
         routeList.add(route);
         routeList.add(route2);
@@ -480,7 +499,15 @@ public class ServiceTest {
         routeList.add(route5);
         routeList.add(route6);
         routeList.add(route7);
-
+        routeList.add(route8);
+        routeList.add(route9);
+        routeList.add(route10);
+        routeList.add(route11);
+        routeList.add(route12);
+        routeList.add(route13);
+        routeList.add(route14);
+        routeList.add(route15);
+        routeList.add(route16);
         try{
 
             driverLicenseDAO.insert(driverLicense);
@@ -537,8 +564,18 @@ public class ServiceTest {
         }
     }
 
+    public static int calculateDistance(double lat1, double lon1, double lat2, double lon2) {
+        double dLat = Math.toRadians(lat2 - lat1);
+        double dLon = Math.toRadians(lon2 - lon1);
 
+        double a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2)) *
+                        Math.sin(dLon / 2) * Math.sin(dLon / 2);
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 
+        double distance = EARTH_RADIUS * c;
+        return (int) Math.round(distance);
+    }
 }
 
 
